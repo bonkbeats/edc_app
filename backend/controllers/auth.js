@@ -1,4 +1,4 @@
-const  User = require('../models/user')
+const  User = require('../models/auth')
 const {StatusCodes} = require('http-status-codes')
 const { BadRequestError, UnauthenticatedError } = require('../errors')
 
@@ -10,7 +10,7 @@ const register =  async (req,res) => {
    const token = user.createJwt();
    res
    .status(StatusCodes.CREATED)
-   .json({ user :  {name:user.name},token})
+   .json({ user :  {name:user.name ,role: user.role},token})
    
 }
 
@@ -32,7 +32,7 @@ const login = async (req, res) => {
    }
    // compare password
    const token = user.createJwt();
-   res.status(StatusCodes.OK).json({ user: { name: user.name }, token })
+   res.status(StatusCodes.OK).json({ user: { name: user.name, role: user.role  }, token })
  }
 
  
