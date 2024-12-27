@@ -29,6 +29,11 @@ const UserSchema = new mongoose.Schema({
       required:[ true,'please provide password'],
       minlength: 6,
    },
+   role: {
+      type: String,
+      enum: ['user', 'admin'], // Only allow 'user' or 'admin'
+      default: 'user',
+    },
 
    
 })
@@ -45,7 +50,7 @@ UserSchema.pre('save', async function () {
 
 //creating token
 UserSchema.methods.createJwt = function () {
-   return jwt.sign({userId : this._id, name:this.name}, 'jwtSecret' , {expiresIn :'30d'})
+   return jwt.sign({userId : this._id, name:this.name,role: this.role }, 'jwtSecret' , {expiresIn :'30d'})
 }
 
 

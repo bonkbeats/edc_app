@@ -1,11 +1,13 @@
-const User = require('../models/user')
+const User = require('../models/auth')
 const jwt = require('jsonwebtoken')
-const {UnauthenticatedError} = require('../errors')
+const {UnauthenticatedError ,UnauthorizedError} = require('../errors')
 
 const auth = async(req , res , next) =>{
+  
+
 
    const authHeader = req.headers.authorization
-   if(!authHeader || !authHeader.startswith('Bearer')){
+   if(!authHeader || !authHeader.startsWith('Bearer')){
       throw new UnauthenticatedError(
          'Authentication error'
       )
@@ -14,7 +16,8 @@ const auth = async(req , res , next) =>{
 
       try {
          const payload = jwt.verify(token,'jwtSecret')
-         req.user = {userId: payload.userId , name: payload.name}
+         req.user = {userId: payload.userId , name: payload.name ,role: payload.role}
+        // console.log('Decoded token:', req.user);
          next()
          
       } catch (error) {
@@ -22,5 +25,24 @@ const auth = async(req , res , next) =>{
          
       }
    }
-   module.exports = auth
 
+   
+   // Authorization Middleware
+const authorizeRoles = (...roles) => {
+   
+
+   return (req, res, next) => {
+      
+     if (!roles.includes(req.user.role)) {
+       throw new UnauthorizedError('Not authorized to access this route');
+     }
+     console.log('User role:', req.user.role);
+     next();
+   };
+ };
+ 
+   module.exports =   { auth, authorizeRoles };
+
+
+
+   
