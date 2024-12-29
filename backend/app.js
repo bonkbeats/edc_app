@@ -16,6 +16,7 @@ const authRouter = require('./routes/auth')
 const userRouter = require('./routes/user');
 const adminRouter = require('./routes/admin')
 const publicEventRouter = require('./routes/public_event'); // Import public_event router
+const path = require('path');
 
 
 
@@ -34,6 +35,14 @@ app.use('/api/v1/auth',authRouter)
 app.use('/api/v1/user/userdashboard',auth, authorizeRoles('user'),  userRouter);
 app.use('/api/v1/user/admindashboard',auth, authorizeRoles('admin'), adminRouter );
 app.use('/api/v1/publicevent', publicEventRouter); // Mount public_event router
+app.use('/images', express.static(path.join(__dirname, 'public/images'))
+);
+app.use('/images', (req, res, next) => {
+  // Log each request made to the /public route
+ 
+  next(); // Move to the next middleware (static file serving)
+});
+
 
  app.use(notFoundMiddleware);
  app.use(errorHandlerMiddleware);
