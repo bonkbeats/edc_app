@@ -17,7 +17,7 @@ const auth = async(req , res , next) =>{
       try {
          const payload = jwt.verify(token,'jwtSecret')
          req.user = {userId: payload.userId , name: payload.name ,role: payload.role}
-        // console.log('Decoded token:', req.user);
+         console.log('Decoded token:', req.user);
          next()
          
       } catch (error) {
