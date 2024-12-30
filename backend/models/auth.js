@@ -34,19 +34,28 @@ const UserSchema = new mongoose.Schema({
       enum: ['user', 'admin'], // Only allow 'user' or 'admin'
       default: 'user',
     },
+    resetPasswordToken: String,
+    resetPasswordExpire: Date,
 
    
 })
 
+// Hash the password before saving
 UserSchema.pre('save', async function () {
-
+   if (!this.isModified('password')) return; // Only hash the password if it's modified
    const salt = await bcrypt.genSalt(10);
-   this.password = await bcrypt.hash(this.password , salt)
+   this.password = await bcrypt.hash(this.password, salt);
+});
+
+// UserSchema.pre('save', async function () {
+
+//    const salt = await bcrypt.genSalt(10);
+//    this.password = await bcrypt.hash(this.password , salt)
   
 
-   // the set of line hash the password before saving it into the database.
+//    // the set of line hash the password before saving it into the database.
 
-})
+// })
 
 //creating token
 UserSchema.methods.createJwt = function () {

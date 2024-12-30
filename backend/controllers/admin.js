@@ -3,14 +3,47 @@
    const Event = require('../models/event')
    const { StatusCodes } = require('http-status-codes')
     const { BadRequestError, NotFoundError } = require('../errors')
+    const multer = require('multer');
+    const path = require('path');
+
+
+
+
+
+// Create event controller
+const createEvent = async (req, res) => {
+  try {
+    // Check if the file is uploaded and set the image URL
+    let image = null;
+    if (req.file) {
+      image = `/images/${req.file.filename}`;  // Relative URL for the image
+      console.log('File uploaded to:', path.join(__dirname, '../public/images', req.file.filename)); // Log the full path
+    }
+
+    // Create a new event with the provided details
+    const event = await Event.create({
+      eventname: req.body.eventname,
+      location: req.body.location,
+      image: image, // Store the image URL (relative path) in the database
+    });
+   
+
+
+    // Send response with the created event
+    res.status(StatusCodes.CREATED).json({ event });
+  } catch (error) {
+    // Handle errors (e.g., validation errors, database errors)
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
+  }
+};
 
    
    
-   const createEvent = async (req, res) => {
-     const event = await Event.create(req.body)
-     res.status(StatusCodes.CREATED).json({event})
+  //  const createEvent = async (req, res) => {
+  //    const event = await Event.create(req.body)
+  //    res.status(StatusCodes.CREATED).json({event})
  
-    }
+  //   }
 
 
     const deleteEvent = async (req, res) => {
