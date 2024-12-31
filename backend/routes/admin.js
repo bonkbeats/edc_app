@@ -25,7 +25,7 @@ const storage = multer.diskStorage({
 
 router.route('/').post(upload.single('image'),createEvent).get(getAllEvent)
 
-router.route('/:id').get(getEvent).delete(deleteEvent).patch(updateEvent)
+router.route('/:id').get(getEvent).delete(deleteEvent).patch(upload.single('image'),updateEvent)
 
 module.exports = router
 

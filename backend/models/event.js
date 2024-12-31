@@ -16,7 +16,28 @@ const eventSchema = new mongoose.Schema(
       image:{
          type:String,
          required:false
-      }
+      },
+      description:{
+         type :String,
+         required :[true ,'please provide event description'],
+        
+      },
+      organiser:{
+         type :String,
+         required :[true ,'please provide organiser'],
+        
+      },
+      eventDate: {
+         type: String,
+         required: [true, 'Event date is required']
+       },
+       
+       eventDay: {
+         type: String,
+         required: [true, 'Event day is required']
+       },
+       // Time of the event (e.g., "10:00 AM")
+       
    },
    { timestamps: true }
 )
