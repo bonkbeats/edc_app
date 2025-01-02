@@ -31,12 +31,29 @@
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
       }
     };
+
+    const searchevent = async (req,res) => {
+      const {name} = req.query;
+      if (!name) {
+        return res.status(400).json({ error: 'Event name is required' });
+      }
+      try {
+        const events = await Event.find({
+          eventname: { $regex: name, $options: 'i' },
+        });
+        res.status(200).json(events);
+      } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: 'Server error' });
+      }
+    }
     
  
 module.exports = {
  
   getAllEvent,
   getEvent,
+  searchevent,
  
    
  }

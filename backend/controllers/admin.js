@@ -107,7 +107,7 @@ const updateEvent = async (req, res) => {
     console.log('Received request to update event:', req.body);
 
     const {
-      body: { eventname, location ,eventDate,eventDay,description},
+      body: { eventname, location ,eventDate,eventDay,description,organiser},
       params: { id: eventId },
     } = req;
 
@@ -122,6 +122,7 @@ const updateEvent = async (req, res) => {
     let updatedData = {
       eventname,
       location,
+      organiser,
       eventDate,
       eventDay,
       description
