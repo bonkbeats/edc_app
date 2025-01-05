@@ -10,6 +10,13 @@ const {
    getEvent,
 } = require('../controllers/admin')
 
+const {
+  createProfile,
+  getAllProfile,
+  deleteProfile,
+  updateProfile
+}= require('../controllers/edc_team')
+
 
 // Multer configuration for image upload
 const storage = multer.diskStorage({
@@ -23,9 +30,11 @@ const storage = multer.diskStorage({
  const upload = multer({ storage: storage });
  
 
+router.route('/profile/:id').delete(deleteProfile).get(getAllProfile).patch(upload.single('image'),updateProfile)
+router.route('/profile').post(upload.single('image'),createProfile).get(getAllProfile)
 router.route('/').post(upload.single('image'),createEvent).get(getAllEvent)
-
 router.route('/:id').get(getEvent).delete(deleteEvent).patch(upload.single('image'),updateEvent)
+
 
 module.exports = router
 

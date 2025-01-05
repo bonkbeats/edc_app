@@ -15,8 +15,11 @@ const { auth, authorizeRoles } = require('./middleware/authentication');
 const authRouter = require('./routes/auth')
 const userRouter = require('./routes/user');
 const adminRouter = require('./routes/admin')
-const publicEventRouter = require('./routes/public_event'); // Import public_event router
+const publicEventRouter = require('./routes/public_event'); // 
+// Import public_event router
+
 const path = require('path');
+
 
 
 
@@ -42,6 +45,7 @@ app.use('/images', (req, res, next) => {
  
   next(); // Move to the next middleware (static file serving)
 });
+
 
 
  app.use(notFoundMiddleware);
