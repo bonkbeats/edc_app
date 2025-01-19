@@ -19,14 +19,15 @@ const {
 
 
 // Multer configuration for image upload
-const storage = multer.diskStorage({
-   destination: (req, file, cb) => {
-     cb(null, path.join(__dirname, '../public/images'));
-   },
-   filename: (req, file, cb) => {
-     cb(null, Date.now() + path.extname(file.originalname)); // Timestamp to avoid name conflicts
-   },
- });
+// const storage = multer.diskStorage({
+//    destination: (req, file, cb) => {
+//      cb(null, path.join(__dirname, '../public/images'));
+//    },
+//    filename: (req, file, cb) => {
+//      cb(null, Date.now() + path.extname(file.originalname)); // Timestamp to avoid name conflicts
+//    },
+//  });
+const storage = multer.memoryStorage();
  const upload = multer({ storage: storage });
  
 

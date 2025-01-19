@@ -1,5 +1,5 @@
 const userdashboard = async (req, res) => {
-   res.send()
+   res.send('hello')
     }
 
     

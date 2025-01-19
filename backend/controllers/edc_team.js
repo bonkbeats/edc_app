@@ -2,6 +2,7 @@ const Profile = require('../models/edc_team')
 const { StatusCodes } = require('http-status-codes');
 const path = require('path');
 const { BadRequestError, NotFoundError } = require('../errors')
+const supabase=require('../supabase.js/supabaseClient')
 
 
 
@@ -15,8 +16,25 @@ const createProfile = async (req, res) => {
     // Check if the file is uploaded and set the image URL
     let image = null;
     if (req.file) {
-      image = `/images/${req.file.filename}`;  // Relative URL for the image
-      console.log('File uploaded to:', path.join(__dirname, '../public/images', req.file.filename)); // Log the full path
+      const {originalname , buffer} = req.file;
+      const fileName = `${Date.now()}-${originalname}`;
+      const {data,error} = await supabase
+      .storage
+      .from('events')
+      .upload(`images/${fileName}`,buffer,{
+        cacheControl: '3600',
+        upsert: false,
+      })
+
+      if (error) {
+        console.log('Error uploading image to Supabase:', error); 
+        throw new Error('Failed to upload image to Supabase');
+      }  
+      console.log('Data from Supabase:', data);
+
+      const baseUrl = 'https://pqyacvthkumxduejdpsu.supabase.co/storage/v1/object/public';
+      const bucketName = 'events';
+      image = `${baseUrl}/${bucketName}/${data.path}`;
     }
 
     // Create a new event with the provided details
@@ -111,9 +129,34 @@ const createProfile = async (req, res) => {
         };
     
         if (req.file) {
-          // If a new file is uploaded, update the image field
-          updatedData.image = `/images/${req.file.filename}`; // Relative URL for the new image
-          console.log('File uploaded to:', path.join(__dirname, '../public/images', req.file.filename)); // Log the full path
+          
+      const { originalname, buffer } = req.file;
+      const fileName = `${Date.now()}-${originalname}`;
+
+      // Upload the new image to Supabase storage
+      const { data, error: uploadError } = await supabase
+        .storage
+        .from('events')
+        .upload(`images/${fileName}`, buffer, {
+          cacheControl: '3600',
+          upsert: false,
+        });
+
+      if (uploadError) {
+        console.error('Error uploading image to Supabase:', uploadError);
+        throw new Error('Failed to upload image to Supabase');
+      }
+
+      console.log('Data from Supabase:', data);
+      const baseUrl = 'https://pqyacvthkumxduejdpsu.supabase.co/storage/v1/object/public';
+      const bucketName = 'events';
+      const image = `${baseUrl}/${bucketName}/${data.path}`;
+      
+
+      console.log('Constructed Public URL:', image);
+      updatedData.image = image; // Store the constructed image URL in the update data
+          
+         
         }
     
         // Update the event in the database
@@ -139,14 +182,7 @@ const createProfile = async (req, res) => {
           .json({ error: error.message });
       }
     };
-
     
-
-
-
-
-
-
 module.exports = {
    createProfile,
    getAllProfile,

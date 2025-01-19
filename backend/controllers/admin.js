@@ -1,10 +1,14 @@
    
 
    const Event = require('../models/event')
+  
    const { StatusCodes } = require('http-status-codes')
     const { BadRequestError, NotFoundError } = require('../errors')
     const multer = require('multer');
     const path = require('path');
+    const supabase=require('../supabase.js/supabaseClient')
+
+
 
 
 
@@ -12,13 +16,49 @@
 
 // Create event controller
 const createEvent = async (req, res) => {
+  console.log('testing///////////////////////////////////')
   try {
     // Check if the file is uploaded and set the image URL
     let image = null;
-    if (req.file) {
-      image = `/images/${req.file.filename}`;  // Relative URL for the image
-      console.log('File uploaded to:', path.join(__dirname, '../public/images', req.file.filename)); // Log the full path
-    }
+
+
+    // if (req.file) {
+    //   image = `/images/${req.file.filename}`;  // Relative URL for the image
+    //   console.log('File uploaded to:', path.join(__dirname, '../public/images', req.file.filename)); // Log the full path
+    // }
+
+    if (req.file){
+        const {originalname , buffer} = req.file;
+      const fileName = `${Date.now()}-${originalname}`;
+      const {data,error} = await supabase
+      .storage
+      .from('events')
+      .upload(`images/${fileName}`,buffer,{
+        cacheControl: '3600',
+        upsert: false,
+      })
+
+      if (error) {
+        console.log('Error uploading image to Supabase:', error); 
+        throw new Error('Failed to upload image to Supabase');
+      }  
+
+
+        console.log('Data from Supabase:', data);
+       
+
+        // Construct the public URL manually
+        
+        const baseUrl = 'https://pqyacvthkumxduejdpsu.supabase.co/storage/v1/object/public';
+        const bucketName = 'events';
+        image = `${baseUrl}/${bucketName}/${data.path}`;
+  
+       // console.log('Constructed Public URL:', image);
+      }
+  
+     // console.log('Image URL to be saved:', image);
+
+
 
     // Create a new event with the provided details
     const event = await Event.create({
@@ -28,9 +68,6 @@ const createEvent = async (req, res) => {
       organiser:req.body.organiser,
       eventDate:req.body.eventDate,
       eventDay:req.body.eventDay,
-      
-
-
       image: image, // Store the image URL (relative path) in the database
     });
    
@@ -130,10 +167,37 @@ const updateEvent = async (req, res) => {
     };
 
     if (req.file) {
-      // If a new file is uploaded, update the image field
-      updatedData.image = `/images/${req.file.filename}`; // Relative URL for the new image
-      console.log('File uploaded to:', path.join(__dirname, '../public/images', req.file.filename)); // Log the full path
+      // // If a new file is uploaded, update the image field
+      // updatedData.image = `/images/${req.file.filename}`; // Relative URL for the new image
+      // console.log('File uploaded to:', path.join(__dirname, '../public/images', req.file.filename)); // Log the full path
+
+      const { originalname, buffer } = req.file;
+      const fileName = `${Date.now()}-${originalname}`;
+
+      // Upload the new image to Supabase storage
+      const { data, error: uploadError } = await supabase
+        .storage
+        .from('events')
+        .upload(`images/${fileName}`, buffer, {
+          cacheControl: '3600',
+          upsert: false,
+        });
+
+      if (uploadError) {
+        console.error('Error uploading image to Supabase:', uploadError);
+        throw new Error('Failed to upload image to Supabase');
+      }
+
+      console.log('Data from Supabase:', data);
+      const baseUrl = 'https://pqyacvthkumxduejdpsu.supabase.co/storage/v1/object/public';
+      const bucketName = 'events';
+      const image = `${baseUrl}/${bucketName}/${data.path}`;
+      
+
+      console.log('Constructed Public URL:', image);
+      updatedData.image = image; // Store the constructed image URL in the update data
     }
+
 
     // Update the event in the database
     const event = await Event.findByIdAndUpdate(eventId, updatedData, {
