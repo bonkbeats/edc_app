@@ -15,8 +15,11 @@ const { auth, authorizeRoles } = require('./middleware/authentication');
 const authRouter = require('./routes/auth')
 const userRouter = require('./routes/user');
 const adminRouter = require('./routes/admin')
-const publicEventRouter = require('./routes/public_event'); // Import public_event router
+const publicEventRouter = require('./routes/public_event'); // 
+// Import public_event router
+
 const path = require('path');
+
 
 
 
@@ -44,6 +47,7 @@ app.use('/images', (req, res, next) => {
 });
 
 
+
  app.use(notFoundMiddleware);
  app.use(errorHandlerMiddleware);
 
@@ -52,7 +56,7 @@ const port = process.env.PORT || 4000;
 const start = async () => {
   try {
    await connectDB(process.env.MONGO_URI)
-    app.listen(port, () =>
+    app.listen(port,'0.0.0.0', () =>
       console.log(`Server is listening on port ${port}...`)
     );
   } catch (error) {
