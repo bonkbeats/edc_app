@@ -13,14 +13,18 @@ const auth = async(req , res , next) =>{
       )
    }
       const token = authHeader.split(' ')[1]
+      console.log(token)
 
       try {
          const payload = jwt.verify(token,'jwtSecret')
+       
          req.user = {userId: payload.userId , name: payload.name ,role: payload.role}
          console.log('Decoded token:', req.user);
+         console.log('Decoded token:', req.user.userId);
          next()
          
       } catch (error) {
+         console.log(error)
          throw new UnauthenticatedError('Authentication invalid')
          
       }
