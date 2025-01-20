@@ -2,10 +2,10 @@ const express = require('express')
 
 
 const router = express.Router()
-const { userdashboard} = require('../controllers/user')
+const { createTeam , getTeamsByUser} = require('../controllers/user')
 
 
-router.get('/',userdashboard)
+router.post('/',createTeam).get('/',getTeamsByUser)
 
 //router.route('/:id').get(getJob).delete(deleteJob).patch(updateJob)
 

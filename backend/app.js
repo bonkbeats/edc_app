@@ -35,7 +35,9 @@ app.use(express.json());
 // routes
 app.use('/api/v1/auth',authRouter)
 // app.use('/api/v1/jobs', authenticateUser, jobsRouter);
-app.use('/api/v1/user/userdashboard',auth, authorizeRoles('user'),  userRouter);
+// app.use('/api/v1/user/userdashboard',auth, authorizeRoles('user'),  userRouter);
+app.use('/api/v1/user/userdashboard',auth, authorizeRoles('user'),userRouter);
+
 app.use('/api/v1/user/admindashboard',auth, authorizeRoles('admin'), adminRouter );
 app.use('/api/v1/publicevent', publicEventRouter); // Mount public_event router
 app.use('/images', express.static(path.join(__dirname, 'public/images'))
