@@ -20,6 +20,14 @@ const teamSchema = new mongoose.Schema({
         },
         message: 'A team can have a maximum of 4 email IDs.',
       },
+      {
+        validator: function (value) {
+          // Check for duplicate email IDs within the same team
+          const uniqueEmails = new Set(value);
+          return uniqueEmails.size === value.length;
+        },
+        message: 'Duplicate email IDs are not allowed within the same team.',
+      },
     ],
   },
   userId: {

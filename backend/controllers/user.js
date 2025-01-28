@@ -46,9 +46,15 @@ const getTeamsByUser = async (req, res) => {
       const teams = await Team.find({ userId: req.user.userId });
 
       // If no teams are found
-      if (teams.length === 0) {
-         return res.status(404).json({ message: 'No teams found for this user' });
-      }
+      // if (teams.length === 0) {
+      //    return res.status(404).json({ message: 'No teams found for this user' });
+      // }
+
+            // Handle the case where no teams are found
+            if (teams.length === 0) {
+               return res.status(200).json({ teams: [], message: 'No teams found for this user.' });
+            }
+      
 
       // Respond with the teams data
       res.status(200).json({ teams });
